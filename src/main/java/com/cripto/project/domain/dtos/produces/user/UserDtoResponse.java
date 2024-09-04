@@ -15,10 +15,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDtoResponse {
+
     private Long id;
     private String name;
     private String lastname;
     private String email;
+    
     public static UserDtoResponse responseDto(UserEntity entity){
         return new UserDtoResponse(entity.getId(), entity.getName(),entity.getLastname(), entity.getEmail());
     }

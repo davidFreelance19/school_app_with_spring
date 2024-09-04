@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cripto.project.domain.dtos.consumes.GroupDtoRequest;
 import com.cripto.project.domain.dtos.produces.group.GroupDtoResponse;
-import com.cripto.project.domain.services.GroupService;
+import com.cripto.project.domain.services.IGroupService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
@@ -29,9 +29,9 @@ import jakarta.validation.constraints.Positive;
 @RequestMapping("/admin/groups")
 public class GroupsController {
 
-    private final GroupService groupService;
+    private final IGroupService groupService;
 
-    GroupsController(GroupService groupService) {
+    GroupsController(IGroupService groupService) {
         this.groupService = groupService;
     }
 

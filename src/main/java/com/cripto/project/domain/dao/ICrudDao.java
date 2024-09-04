@@ -6,7 +6,9 @@ import java.util.List;
 public interface ICrudDao<T> {
     public T register(T t);
 
-    public List<T> getAll();
+    default List<T> getAll(){
+        return List.of();
+    }
 
     public T getById(Long id);
 

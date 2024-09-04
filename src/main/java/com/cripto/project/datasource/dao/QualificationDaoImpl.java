@@ -1,6 +1,6 @@
 package com.cripto.project.datasource.dao;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,8 +9,9 @@ import com.cripto.project.domain.dao.IQualificationDao;
 import com.cripto.project.domain.entities.QualificationEntity;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
-import java.util.Collections;
+
 
 @Repository
 public class QualificationDaoImpl implements IQualificationDao {
@@ -27,8 +28,9 @@ public class QualificationDaoImpl implements IQualificationDao {
 
     @Override
     @Transactional(readOnly = true)
-    public QualificationEntity getById(Long id) {
-        return this.em.find(QualificationEntity.class, id);
+    public QualificationEntity getById(Long id) throws NoResultException{
+        return Optional.ofNullable(this.em.find(QualificationEntity.class, id))
+            .orElseThrow(()-> new NoResultException("Qualification not found"));
     }
 
     @Override
@@ -47,29 +49,6 @@ public class QualificationDaoImpl implements IQualificationDao {
 
         this.em.merge(qualification);
         return qualification;
-    }
-
-    @Override
-    public List<QualificationEntity> getAll() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<QualificationEntity> getQualificationsByCourse(Long courseId) {
-        return this.em
-                .createQuery("SELECT q FROM QualificationEntity q WHERE q.course.id = :id", QualificationEntity.class)
-                .setParameter("id", courseId)
-                .getResultList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<QualificationEntity> getQualificationsByStudent(Long studentId) {
-        return this.em
-                .createQuery("SELECT q FROM QualificationEntity q WHERE q.student.id = :id", QualificationEntity.class)
-                .setParameter("id", studentId)
-                .getResultList();
     }
 
 }

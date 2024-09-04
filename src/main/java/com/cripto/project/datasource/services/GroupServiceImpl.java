@@ -13,14 +13,13 @@ import com.cripto.project.domain.dtos.consumes.GroupDtoRequest;
 import com.cripto.project.domain.dtos.produces.group.GroupDtoResponse;
 import com.cripto.project.domain.dtos.produces.group.GroupWithCoursesDtoResponse;
 import com.cripto.project.domain.entities.GroupEntity;
-import com.cripto.project.domain.services.GroupService;
+import com.cripto.project.domain.services.IGroupService;
 import com.cripto.project.presentation.exceptions.GlobalErrorsMessage;
 
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.NoResultException;
 
 @Service
-public class GroupServiceImpl implements GroupService {
+public class GroupServiceImpl implements IGroupService {
 
     private static final String GROUPS = "groups";
     private static final String GROUP = "group";
@@ -40,7 +39,7 @@ public class GroupServiceImpl implements GroupService {
             GroupDtoResponse response = GroupDtoResponse.responseDto(this.groupRepository.register(entity));
             return Map.of(GROUP, response);
         } catch (DataIntegrityViolationException e) {
-            throw new EntityExistsException("Group already exists");
+            throw new DataIntegrityViolationException("Group already exists");
         } 
     }
 
@@ -81,7 +80,7 @@ public class GroupServiceImpl implements GroupService {
         } catch (NoResultException e) {
             throw new NoResultException(e.getMessage());
         } catch (DataIntegrityViolationException e) {
-            throw new EntityExistsException("Group already exists");
+            throw new DataIntegrityViolationException("Group already exists");
         } 
     }
 

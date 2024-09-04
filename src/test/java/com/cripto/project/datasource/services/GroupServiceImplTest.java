@@ -19,7 +19,6 @@ import com.cripto.project.domain.dtos.produces.group.GroupDtoResponse;
 import com.cripto.project.domain.entities.CourseEntity;
 import com.cripto.project.domain.entities.GroupEntity;
 
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.NoResultException;
 
 import java.util.ArrayList;
@@ -59,18 +58,18 @@ class GroupServiceImplTest {
     /**
      * Tests the registration of a group that already exists.
      * 
-     * @throws EntityExistsException when attempting to register a group
+     * @throws DataIntegrityViolationException when attempting to register a group
      *                               with a name that already exists.
      */
     @Test
     void test_register_group_already_exists() {
         GroupDtoRequest dto = new GroupDtoRequest();
-        dto.setName("1AV1");
+        dto.setName("9AV1");
         
         when(groupRepository.register(any(GroupEntity.class)))
                 .thenThrow(new DataIntegrityViolationException("Group already exists"));
 
-        assertThrows(EntityExistsException.class, () -> {
+        assertThrows(DataIntegrityViolationException.class, () -> {
             this.groupService.register(dto);
         });
     }
@@ -176,19 +175,19 @@ class GroupServiceImplTest {
     /**
      * Tests the update of a GroupEntity with a name that already exists.
      * 
-     * @throws EntityExistsException when attempting to update a group
+     * @throws DataIntegrityViolationException when attempting to update a group
      *                               with a name that's already in use.
      */
     @Test
     void test_update_group_with_name_already_exists(){
         Long id = 1L;
         GroupDtoRequest request = new GroupDtoRequest();
-        request.setName("2BV1");
+        request.setName("8AV1");
 
         when(groupRepository.update(anyLong(), any(GroupEntity.class)))
             .thenThrow(new DataIntegrityViolationException("Group already exists"));
 
-        assertThrows(EntityExistsException.class, () -> {
+        assertThrows(DataIntegrityViolationException.class, () -> {
             this.groupService.update(id, request);
         });
     }

@@ -8,3 +8,4 @@ public class GlobalErrorsMessage {
     public static final String RESOURCE_NOT_FOUND = "The requested resource could not be found";
 
 }
+ 

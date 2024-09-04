@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cripto.project.domain.dtos.consumes.CourseDtoRequest;
 import com.cripto.project.domain.dtos.produces.course.CourseDtoResponse;
-import com.cripto.project.domain.services.CourseService;
+import com.cripto.project.domain.services.ICourseService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping("/admin/courses")
 public class CourseController {
 
-    private final CourseService courseService;
+    private final ICourseService courseService;
 
-    CourseController(CourseService service) {
+    CourseController(ICourseService service) {
         this.courseService = service;
     }
 

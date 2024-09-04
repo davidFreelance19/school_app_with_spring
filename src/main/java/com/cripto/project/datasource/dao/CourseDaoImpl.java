@@ -25,11 +25,7 @@ public class CourseDaoImpl implements ICourseDao {
     private EntityManager em;
     @Override
     @Transactional
-    public CourseEntity register(CourseEntity entity) throws EntityExistsException{
-        CourseEntity course = this.getCourseByGroupAndName(entity.getGroup().getId(), entity.getName());
-        if (course.getId() != null)
-            throw new EntityExistsException("Course already exists");
-
+    public CourseEntity register(CourseEntity entity){
         this.em.persist(entity);
         this.refresh(entity);
         return entity;
@@ -50,13 +46,8 @@ public class CourseDaoImpl implements ICourseDao {
 
     @Override
     @Transactional
-    public CourseEntity update(Long id, CourseEntity entity) throws EntityExistsException, NoResultException {
+    public CourseEntity update(Long id, CourseEntity entity) throws NoResultException {
         CourseEntity courseExist = this.getById(id);
-
-        CourseEntity duplicateCourse = this.getCourseByGroupAndName(entity.getGroup().getId(), entity.getName());
-
-        if (duplicateCourse.getId() != null && !duplicateCourse.equals(courseExist))
-            throw new EntityExistsException("Course already exists");
 
         courseExist.setGroup(entity.getGroup());
         courseExist.setName(entity.getName());
@@ -114,24 +105,6 @@ public class CourseDaoImpl implements ICourseDao {
             .stream().forEach(courses::add);
         
         return courses;
-    }
-
-    @Transactional(readOnly = true)
-    public CourseEntity getCourseByGroupAndName(Long groupId, String courseName) {
-        CourseEntity course = new CourseEntity();
-
-        try {
-            course = this.em.createQuery(
-            "SELECT c FROM CourseEntity c WHERE c.group.id = :id AND c.name = :name",
-            CourseEntity.class
-            )
-                .setParameter("id", groupId)
-                .setParameter("name",  courseName)
-                .getSingleResult();
-            return course;
-        } catch (NoResultException e) {
-            return course;
-        }
     }
 
     public void refresh(CourseEntity entity) {

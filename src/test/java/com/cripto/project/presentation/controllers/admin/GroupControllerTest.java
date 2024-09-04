@@ -17,7 +17,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.cripto.project.domain.services.GroupService;
+import com.cripto.project.domain.services.IGroupService;
 import com.cripto.project.presentation.exceptions.GlobalErrorsMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,7 +41,7 @@ class GroupControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private GroupService groupService;
+    private IGroupService groupService;
 
 
     @Test

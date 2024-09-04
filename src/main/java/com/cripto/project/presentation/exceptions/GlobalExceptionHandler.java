@@ -5,6 +5,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.NoResultException;
@@ -106,6 +109,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(Map.of(KEY, ex.getMessage()), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, String>> handleBadCredentialsException(BadCredentialsException ex) {
+        return new ResponseEntity<>(Map.of(KEY, ex.getMessage()), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleDeniedAccessException(AccessDeniedException ex) {
+        return new ResponseEntity<>(Map.of(KEY, ex.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<Map<String, String>> handleResourceNotFound(NoResourceFoundException ex) {
         return new ResponseEntity<>(Map.of(KEY, GlobalErrorsMessage.RESOURCE_NOT_FOUND), HttpStatus.NOT_FOUND);

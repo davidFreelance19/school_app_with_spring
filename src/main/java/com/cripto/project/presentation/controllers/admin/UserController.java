@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cripto.project.domain.dtos.consumes.UserDtoRequest;
 import com.cripto.project.domain.dtos.produces.user.UserDtoResponse;
-import com.cripto.project.domain.services.UserService;
+import com.cripto.project.domain.services.IUserService;
+import com.cripto.project.utils.RoleEnum;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,9 +29,9 @@ import jakarta.validation.constraints.Positive;
 @RequestMapping("/admin/users")
 public class UserController {
 
-    private final UserService userService;
+    private final IUserService userService;
 
-    UserController(UserService userService) {
+    UserController(IUserService userService) {
         this.userService = userService;
     }
 
@@ -38,14 +39,14 @@ public class UserController {
     public ResponseEntity<Map<String, UserDtoResponse>> registerStudent(
         @RequestBody @Valid UserDtoRequest user
     ) {
-        return new ResponseEntity<>(this.userService.register(user), HttpStatus.CREATED);
+        return new ResponseEntity<>(this.userService.register(user, RoleEnum.STUDENT), HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/register-teacher", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, UserDtoResponse>> registerTeacher(
         @RequestBody @Valid UserDtoRequest user
     ) {
-        return new ResponseEntity<>(this.userService.register(user), HttpStatus.CREATED);
+        return new ResponseEntity<>(this.userService.register(user, RoleEnum.TEACHER), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -68,8 +69,16 @@ public class UserController {
         return new ResponseEntity<>(this.userService.update(userId, user), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/delete-user/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, String>> deleteUser(
+    @DeleteMapping(value = "/delete-student/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, String>> deleteStudent(
+        @PathVariable @Positive(message = "{Invalid.id.user}") Long userId
+    ) {
+        return new ResponseEntity<>(this.userService.delete(userId), HttpStatus.OK);
+    }
+
+    
+    @DeleteMapping(value = "/delete-teacher/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, String>> deleteTeacher(
         @PathVariable @Positive(message = "{Invalid.id.user}") Long userId
     ) {
         return new ResponseEntity<>(this.userService.delete(userId), HttpStatus.OK);

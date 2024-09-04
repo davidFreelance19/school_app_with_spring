@@ -41,7 +41,6 @@ public class UserEntity {
     @OneToMany(targetEntity = CourseEntity.class, mappedBy ="teacher", fetch = FetchType.LAZY)
     private List<CourseEntity> courses;
 
-    
     @OneToMany(targetEntity = QualificationEntity.class, mappedBy ="student", fetch = FetchType.LAZY)
     private List<QualificationEntity> qualifications;
 

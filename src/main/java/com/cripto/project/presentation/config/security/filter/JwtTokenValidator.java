@@ -1,4 +1,4 @@
-package com.cripto.project.presentation.config.filter;
+package com.cripto.project.presentation.config.security.filter;
 
 import java.io.IOException;
 import java.util.Collection;

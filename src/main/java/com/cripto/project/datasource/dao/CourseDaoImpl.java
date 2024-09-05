@@ -23,6 +23,8 @@ public class CourseDaoImpl implements ICourseDao {
 
     @PersistenceContext
     private EntityManager em;
+
+    
     @Override
     @Transactional
     public CourseEntity register(CourseEntity entity){

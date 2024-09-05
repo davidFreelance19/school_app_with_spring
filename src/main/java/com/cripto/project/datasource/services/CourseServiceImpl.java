@@ -31,18 +31,18 @@ public class CourseServiceImpl implements ICourseService {
     private static final String COURSES = "courses";
     private static final String MESSAGE = "message";
 
-    private final ICourseDao courseRepository;
+    private final ICourseDao courseDao;
     private final IUserService userService;
     private final IGroupService groupService;
     private final ICredentialsDao credentialsDao;
 
     CourseServiceImpl(
-            ICourseDao repository,
+            ICourseDao courseDao,
             IGroupService groupService,
             IUserService userService,
             ICredentialsDao credentialsDao
     ) {
-        this.courseRepository = repository;
+        this.courseDao = courseDao;
         this.groupService = groupService;
         this.userService = userService;
         this.credentialsDao = credentialsDao;
@@ -56,7 +56,7 @@ public class CourseServiceImpl implements ICourseService {
             ModelMapper mapper = new ModelMapper();
             CourseEntity entity = mapper.map(dto, CourseEntity.class);
 
-            CourseDtoResponse response = CourseDtoResponse.responseDto(this.courseRepository.register(entity));
+            CourseDtoResponse response = CourseDtoResponse.responseDto(this.courseDao.register(entity));
             return Map.of(COURSE, response);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Course already registered");
@@ -67,7 +67,7 @@ public class CourseServiceImpl implements ICourseService {
 
     @Override
     public final Map<String, List<CourseDtoResponse>> getAll() {
-        List<CourseDtoResponse> courses = this.courseRepository.getAll().stream()
+        List<CourseDtoResponse> courses = this.courseDao.getAll().stream()
                 .map(CourseDtoResponse::responseDto).collect(Collectors.toList());
 
         return Map.of(COURSES, courses);
@@ -76,7 +76,7 @@ public class CourseServiceImpl implements ICourseService {
     @Override
     public final Map<String, CourseDtoResponse> getById(Long id) {
         try {
-            CourseDtoResponse response = CourseWithStudentsDtoResponse.responseDto(this.courseRepository.getById(id));
+            CourseDtoResponse response = CourseWithStudentsDtoResponse.responseDto(this.courseDao.getById(id));
             return Map.of(COURSE, response);
         } catch (NoResultException e) {
             throw new NoResultException(e.getMessage());
@@ -90,7 +90,7 @@ public class CourseServiceImpl implements ICourseService {
             ModelMapper mapper = new ModelMapper();
             CourseEntity entity = mapper.map(dto, CourseEntity.class);
 
-            CourseDtoResponse response = CourseDtoResponse.responseDto(this.courseRepository.update(courseId, entity));
+            CourseDtoResponse response = CourseDtoResponse.responseDto(this.courseDao.update(courseId, entity));
             return Map.of(COURSE, response);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Course already registered");
@@ -102,7 +102,7 @@ public class CourseServiceImpl implements ICourseService {
     @Override
     public final Map<String, String> delete(Long courseId) {
         try {
-            this.courseRepository.delete(courseId);
+            this.courseDao.delete(courseId);
             return Map.of(MESSAGE, "Course deleted successfully");
         } catch (NoResultException e) {
             throw new NoResultException(e.getMessage());
@@ -115,7 +115,7 @@ public class CourseServiceImpl implements ICourseService {
     public final Map<String, String> addStudentToCourse(Long id, Long studentId) {
         try {
             UserEntity student = studentExist(studentId);
-            this.courseRepository.addStudentToCourse(id, student);
+            this.courseDao.addStudentToCourse(id, student);
             return Map.of(MESSAGE, "Student successfully registered in this course");
         } catch (EntityExistsException e) {
             throw new DataIntegrityViolationException(e.getMessage());
@@ -128,7 +128,7 @@ public class CourseServiceImpl implements ICourseService {
     public final Map<String, String> deleteStudentToCourse(Long id, Long studentId) {
         try {
             UserEntity student = studentExist(studentId);
-            this.courseRepository.deleteStudentToCourse(id, student);
+            this.courseDao.deleteStudentToCourse(id, student);
             return Map.of(MESSAGE, "Student successfully removed in this course");
         } catch (NoResultException e) {
             throw new NoResultException(e.getMessage());
@@ -141,7 +141,7 @@ public class CourseServiceImpl implements ICourseService {
             String courseName) {
         try {
             this.groupService.getById(groupId);
-            List<CourseDtoResponse> courses = this.courseRepository
+            List<CourseDtoResponse> courses = this.courseDao
                     .getCourseByGroupAndNameContaining(groupId, courseName)
                     .stream().map(CourseDtoResponse::responseDto).collect(Collectors.toList());
 

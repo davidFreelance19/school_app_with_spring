@@ -19,6 +19,8 @@ import com.cripto.project.domain.services.IUserService;
 import com.cripto.project.presentation.exceptions.GlobalErrorsMessage;
 import com.cripto.project.utils.RoleEnum;
 import com.cripto.project.utils.GenerateCredential;
+import com.cripto.project.utils.JwtUtil;
+
 import jakarta.persistence.NoResultException;
 
 @Service
@@ -30,18 +32,21 @@ public class UserServiceImpl implements IUserService {
     private final IUserDao userDao;
     private final ICredentialsDao credentialsDao;
     private final PasswordEncoder passwordEncoder;
+    private JwtUtil jwtUtil;
     private final EmailService emailService;
 
     UserServiceImpl(
         IUserDao userDao, 
         ICredentialsDao credentialsDao, 
         PasswordEncoder passwordEncoder,
-        EmailService emailService
+        EmailService emailService,
+        JwtUtil jwtUtil
     ) {
         this.userDao = userDao;
         this.credentialsDao = credentialsDao;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -55,7 +60,8 @@ public class UserServiceImpl implements IUserService {
             CredentialsEntity credential = newCredential.generateCredentials(newUser, role);
             this.credentialsDao.registerCredential(credential);
             
-            this.emailService.sendSimpleEmail(credential, newCredential.getPassword());
+            String tokenVerifyUser = this.jwtUtil.genereteTokenVerifyUser(credential.getUsername());
+            this.emailService.sendWelcomeAppEmail(credential, newCredential.getPassword(), tokenVerifyUser);
 
             UserDtoResponse response = UserDtoResponse.responseDto(newUser);
             return Map.of(USER, response);
@@ -107,5 +113,13 @@ public class UserServiceImpl implements IUserService {
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException(GlobalErrorsMessage.DATA_INTEGRITY_VIOLATION);
         }
+    }
+
+    @Override
+    public Map<String, String> resetPassword(String username, String password) {
+        String passwordHash = passwordEncoder.encode(password);
+
+        this.credentialsDao.resetPassword(passwordHash, username);
+        return Map.of("MESSAGE", "Password changed successfully");
     }
 }

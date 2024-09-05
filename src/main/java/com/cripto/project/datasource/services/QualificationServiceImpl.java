@@ -37,7 +37,8 @@ public class QualificationServiceImpl implements IQualificattionService {
             IQualificationDao qualificationDao,
             ICourseDao courseDao,
             IUserService userService,
-            ICredentialsDao credentialsDao) {
+            ICredentialsDao credentialsDao
+    ) {
         this.qualificationDao = qualificationDao;
         this.courseDao = courseDao;
         this.userService = userService;

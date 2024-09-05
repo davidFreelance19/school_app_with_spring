@@ -1,4 +1,4 @@
-package com.cripto.project.presentation.config.aspects;
+package com.cripto.project.presentation.config.security.aspects.qualifications;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

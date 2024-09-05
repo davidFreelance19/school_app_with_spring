@@ -24,10 +24,10 @@ public class GroupServiceImpl implements IGroupService {
     private static final String GROUPS = "groups";
     private static final String GROUP = "group";
 
-    private final IGroupDao groupRepository;
+    private final IGroupDao groupDao;
 
-    GroupServiceImpl(IGroupDao groupRepository) {
-        this.groupRepository = groupRepository;
+    GroupServiceImpl(IGroupDao groupDao) {
+        this.groupDao = groupDao;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class GroupServiceImpl implements IGroupService {
             ModelMapper modelMapper = new ModelMapper();
             GroupEntity entity = modelMapper.map(dto, GroupEntity.class);
 
-            GroupDtoResponse response = GroupDtoResponse.responseDto(this.groupRepository.register(entity));
+            GroupDtoResponse response = GroupDtoResponse.responseDto(this.groupDao.register(entity));
             return Map.of(GROUP, response);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Group already exists");
@@ -45,7 +45,7 @@ public class GroupServiceImpl implements IGroupService {
 
     @Override
     public final Map<String, List<GroupDtoResponse>> getAll() {
-        List<GroupDtoResponse> groups = this.groupRepository.getAll().stream()
+        List<GroupDtoResponse> groups = this.groupDao.getAll().stream()
         .map(GroupDtoResponse::responseDto).collect(Collectors.toList());
 
         return Map.of(GROUPS, groups);
@@ -53,7 +53,7 @@ public class GroupServiceImpl implements IGroupService {
 
     @Override
     public final Map<String, List<GroupDtoResponse>> getGroupByNameContaining(String name) {
-        List<GroupDtoResponse> groups =  this.groupRepository.getGroupByNameContaining(name).stream()
+        List<GroupDtoResponse> groups =  this.groupDao.getGroupByNameContaining(name).stream()
         .map(GroupDtoResponse::responseDto).collect(Collectors.toList());
         
         return Map.of(GROUPS, groups);
@@ -62,7 +62,7 @@ public class GroupServiceImpl implements IGroupService {
     @Override
     public final Map<String, GroupDtoResponse> getById(Long groupId) {
         try {
-            GroupDtoResponse response = GroupWithCoursesDtoResponse.response(this.groupRepository.getById(groupId));
+            GroupDtoResponse response = GroupWithCoursesDtoResponse.response(this.groupDao.getById(groupId));
             return Map.of(GROUP, response);
         } catch (NoResultException e) {
             throw new NoResultException(e.getMessage());
@@ -75,7 +75,7 @@ public class GroupServiceImpl implements IGroupService {
             ModelMapper modelMapper = new ModelMapper();
             GroupEntity entity = modelMapper.map(dto, GroupEntity.class);
 
-            GroupDtoResponse response = GroupDtoResponse.responseDto(this.groupRepository.update(groupId, entity));
+            GroupDtoResponse response = GroupDtoResponse.responseDto(this.groupDao.update(groupId, entity));
             return Map.of(GROUP, response);
         } catch (NoResultException e) {
             throw new NoResultException(e.getMessage());
@@ -87,7 +87,7 @@ public class GroupServiceImpl implements IGroupService {
     @Override
     public final Map<String, String> delete(Long groupId) {
         try {
-            this.groupRepository.delete(groupId);
+            this.groupDao.delete(groupId);
             
             return Map.of("message", "Group deleted successfully");
         } catch (NoResultException e) {

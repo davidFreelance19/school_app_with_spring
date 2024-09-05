@@ -26,6 +26,19 @@ public class JwtUtil {
     @Value("${jwt.user.generator}")
     private String userGenerator;
 
+
+    public String genereteTokenVerifyUser(String username){
+        Algorithm algorithm = Algorithm.HMAC256(this.key);
+        return JWT.create()
+                .withIssuer(this.userGenerator)
+                .withSubject(username)
+                .withIssuedAt(new Date())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 300000))
+                .withJWTId(UUID.randomUUID().toString())
+                .withNotBefore(new Date(System.currentTimeMillis()))
+                .sign(algorithm);
+    }
+
     public String generateToken(Authentication authentication) {
         Algorithm algorithm = Algorithm.HMAC256(this.key);
 

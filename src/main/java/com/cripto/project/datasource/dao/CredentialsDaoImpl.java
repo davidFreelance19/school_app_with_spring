@@ -1,5 +1,7 @@
 package com.cripto.project.datasource.dao;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,22 +13,16 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 
 @Repository
-public class CredentialsDaoImpl implements ICredentialsDao{
-    
+public class CredentialsDaoImpl implements ICredentialsDao {
+
     @PersistenceContext
     private EntityManager em;
 
     @Override
     @Transactional(readOnly = true)
     public CredentialsEntity getCredentialsByUsername(String username) throws NoResultException {
-        try {
-            return this.em
-            .createQuery("SELECT c FROM CredentialsEntity c WHERE c.username = :username", CredentialsEntity.class)
-            .setParameter("username", username)
-            .getSingleResult();
-        } catch (NoResultException e) {
-            throw new NoResultException("User not found");
-        }
+        return Optional.ofNullable(this.em.find(CredentialsEntity.class, username))
+            .orElseThrow(() -> new NoResultException("Invalid username or password"));
     }
 
     @Override
@@ -34,5 +30,23 @@ public class CredentialsDaoImpl implements ICredentialsDao{
     public void registerCredential(CredentialsEntity credential) {
         this.em.persist(credential);
     }
-    
+
+    @Override
+    @Transactional
+    public void verifyUser(String username) {
+        this.em.createQuery("UPDATE CredentialsEntity c SET c.isEnabled = :enable WHERE c.username = :username")
+                .setParameter("username", username)
+                .setParameter("enable", true)
+                .executeUpdate();
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(String newPassword, String username) {
+        this.em.createQuery("UPDATE CredentialsEntity c SET c.password = :newPassword WHERE c.username = :username")
+            .setParameter("username", username)
+            .setParameter("newPassword", newPassword)
+            .executeUpdate();
+    }
+
 }

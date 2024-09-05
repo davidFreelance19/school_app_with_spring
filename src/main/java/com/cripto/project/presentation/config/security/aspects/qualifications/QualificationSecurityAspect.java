@@ -1,4 +1,4 @@
-package com.cripto.project.presentation.config.aspects;
+package com.cripto.project.presentation.config.security.aspects.qualifications;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;

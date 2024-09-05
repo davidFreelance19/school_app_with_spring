@@ -1,4 +1,4 @@
-package com.cripto.project.presentation.config.aspects;
+package com.cripto.project.presentation.config.security.aspects.auth;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RequireQualificationOwnership {
+public @interface RequireVerifyUserByToken {
 }
